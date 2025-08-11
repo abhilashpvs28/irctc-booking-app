@@ -1,0 +1,40 @@
+# Java & Gradle
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.tmp
+
+# Build directories
+/build/
+/out/
+/bin/
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.swp
+*.swo
+
+# Local Database (optional — if you don’t want to push your JSON test data)
+# app/src/main/java/ticket/booking/localDb/users.json
