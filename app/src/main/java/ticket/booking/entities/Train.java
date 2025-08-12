@@ -12,17 +12,14 @@ public class Train {
 
     private List<List<Integer>> seats;
 
-    private Map<String, String> stationTimes;
-
     private Map<String, String> stations;;
 
     public Train () {}  // default constructor
 
-    public Train(String trainId, String trainNo, List<List<Integer>> seats, Map<String, String> stationTimes, Map<String, String> stations) {
+    public Train(String trainId, String trainNo, List<List<Integer>> seats, Map<String, String> stations) {
         this.trainId = trainId;
         this.trainNo = trainNo;
         this.seats = seats;
-        this.stationTimes = stationTimes;
         this.stations = stations;
     }
 
@@ -48,14 +45,6 @@ public class Train {
 
     public void setSeats(List<List<Integer>> seats) {
         this.seats = seats;
-    }
-
-    public Map<String, String> getStationTimes() {
-        return stationTimes;
-    }
-
-    public void setStationTimes(Map<String, String> stationTimes) {
-        this.stationTimes = stationTimes;
     }
 
     public Map<String, String> getStations() {

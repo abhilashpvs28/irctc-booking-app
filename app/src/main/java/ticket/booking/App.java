@@ -10,55 +10,75 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class App {
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
 
         try {
             UserBookingService service = new UserBookingService();
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-            System.out.println("=== Welcome to IRCTC Booking App ===");
-            System.out.println("1. Login");
-            System.out.println("2. Exit");
-            System.out.print("Enter choice: ");
-            String choice = br.readLine();
+            while (true) { // <<< OUTER LOOP: main menu
+                System.out.println("=== Welcome to IRCTC Booking App ===");
+                System.out.println("1. Sign Up");
+                System.out.println("2. Login");
+                System.out.println("3. Exit");
+                System.out.print("Enter choice: ");
+                String choice = br.readLine();
 
-            if ("1".equals(choice)) {
-                System.out.print("Enter name: ");
-                String name = br.readLine();
+                if ("1".equals(choice)) {
+                    System.out.print("Enter name: ");
+                    String name = br.readLine();
+                    System.out.print("Enter password: ");
+                    String password = br.readLine();
+                    service.signUp(name, password);
+                    // after signup, loop continues and shows the main menu again
 
-                System.out.print("Enter password: ");
-                String password = br.readLine();
+                } else if ("2".equals(choice)) {
+                    System.out.print("Enter name: ");
+                    String name = br.readLine();
+                    System.out.print("Enter password: ");
+                    String password = br.readLine();
 
-                if (!service.login(name, password)) {
-                    System.out.println("❌ Login Failed");
-                    return;
-                }
-
-                System.out.println("✅ Logged In Successfully");
-
-                while (true) {
-                    System.out.println("\n--- Menu ---");
-                    System.out.println("1. View My Bookings");
-                    System.out.println("2. Logout");
-                    System.out.print("Enter Choice: ");
-                    String c = br.readLine();
-
-                    if ("1".equals(c)) {
-                        service.fetchBooking();
-                    } else if ("2".equals(c)) {
-                        System.out.println("👋 Logged Out.");
-                        break;
-                    } else {
-                        System.out.println("Invalid Choice");
+                    if (!service.login(name, password)) {
+                        System.out.println("❌ Login Failed");
+                        continue; // back to main menu
                     }
+
+                    System.out.println("✅ Logged In Successfully");
+
+                    // INNER LOOP: logged-in menu
+                    while (true) {
+                        System.out.println("\n--- Menu ---");
+                        System.out.println("1. View My Bookings");
+                        System.out.println("2. Cancel a Booking (by Ticket ID)");
+                        System.out.println("3. Logout");
+                        System.out.print("Enter Choice: ");
+                        String c = br.readLine();
+
+                        if ("1".equals(c)) {
+                            service.fetchBooking();
+                        } else if ("2".equals(c)) {
+                            System.out.print("Enter Ticket ID to cancel: ");
+                            String id = br.readLine();
+                            service.cancelBookingById(id);
+                        } else if ("3".equals(c)) {
+                            System.out.println("Logged Out, Thanks For Visiting Irctc.");
+                            break; // exit inner loop -> back to main menu
+                        } else {
+                            System.out.println("Invalid Choice");
+                        }
+                    }
+
+                } else if ("3".equals(choice)) {
+                    System.out.println("Bye !!");
+                    break; // exit the program
+                } else {
+                    System.out.println("Invalid choice");
                 }
-            } else {
-                System.out.println("Bye !!");
             }
         } catch (Throwable t) {
             System.out.println("=== ERROR IN MAIN ===");
-            t.printStackTrace();  // <-- this will show the real cause of the Gradle failure
+            t.printStackTrace();
         }
-    }
-    }
+}
+}
 

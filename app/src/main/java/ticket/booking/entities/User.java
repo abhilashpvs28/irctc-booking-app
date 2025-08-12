@@ -76,8 +76,8 @@ public class User {
         }
     }
 
-    public boolean cancelTickets(String ticketId){
-        return ticketsBooked.removeIf(ticket -> ticket.getTicketId().equals(ticketId));
+    public boolean cancelTicket(String ticketId){
+        return ticketsBooked.removeIf(ticket -> ticketId != null && ticketId.equals(ticket.getTicketId()));
     }
 
 
