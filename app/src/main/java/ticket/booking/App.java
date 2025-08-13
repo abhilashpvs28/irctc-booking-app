@@ -3,66 +3,108 @@
  */
 package ticket.booking;
 
-
+import ticket.booking.entities.Train;
 import ticket.booking.services.UserBookingService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.List;
 
 public class App {
-    public static void main(String[] args) {
 
+    // -------- small helpers (keep it simple) --------
+    private static String prompt(BufferedReader br, String label) throws IOException {
+        System.out.print(label);
+        return br.readLine().trim();
+    }
+
+    private static void showMainMenu() {
+        System.out.println("=== Welcome to IRCTC Booking App ===");
+        System.out.println("1. Sign Up");
+        System.out.println("2. Login");
+        System.out.println("3. Exit");
+        System.out.print("Enter choice: ");
+    }
+
+    private static void showUserMenu() {
+        System.out.println("\n--- Menu ---");
+        System.out.println("1. View My Bookings");
+        System.out.println("2. Cancel a Booking (by Ticket ID)");
+        System.out.println("3. Book a Ticket");
+        System.out.println("4. Logout");
+        System.out.print("Enter Choice: ");
+    }
+
+    private static void handleBooking(UserBookingService service, BufferedReader br) throws IOException {
+        System.out.println("\nAvailable trains:");
+        service.listTrains();
+
+        String from = prompt(br, "From: ");
+        String to   = prompt(br, "To: ");
+
+        List<Train> options = service.searchTrain(from, to);
+        if (options.isEmpty()) {
+            System.out.println("No Trains Found for that route");
+            return;
+        }
+
+        System.out.println("Matching trains:");
+        for (Train t : options) {
+            System.out.println(" - Train " + t.getTrainNo() + " (" + t.getTrainId() + ")");
+        }
+
+        String trainNo = prompt(br, "Choose Train No (or ID): ");
+        String dateStr = prompt(br, "Date (dd-MM-yyyy): ");
+
+        boolean ok = service.bookTicket(from, to, dateStr, trainNo); // correct order
+        System.out.println(ok ? "Booked successfully." : "Booking failed.");
+    }
+    // -------------------------------------------------
+
+    public static void main(String[] args) {
         try {
             UserBookingService service = new UserBookingService();
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-            while (true) { // <<< OUTER LOOP: main menu
-                System.out.println("=== Welcome to IRCTC Booking App ===");
-                System.out.println("1. Sign Up");
-                System.out.println("2. Login");
-                System.out.println("3. Exit");
-                System.out.print("Enter choice: ");
+            while (true) { // main menu loop
+                showMainMenu();
                 String choice = br.readLine();
 
                 if ("1".equals(choice)) {
-                    System.out.print("Enter name: ");
-                    String name = br.readLine();
-                    System.out.print("Enter password: ");
-                    String password = br.readLine();
+                    String name = prompt(br, "Enter name: ");
+                    String password = prompt(br, "Enter password: ");
                     service.signUp(name, password);
-                    // after signup, loop continues and shows the main menu again
 
                 } else if ("2".equals(choice)) {
-                    System.out.print("Enter name: ");
-                    String name = br.readLine();
-                    System.out.print("Enter password: ");
-                    String password = br.readLine();
+                    String name = prompt(br, "Enter name: ");
+                    String password = prompt(br, "Enter password: ");
 
                     if (!service.login(name, password)) {
                         System.out.println("❌ Login Failed");
-                        continue; // back to main menu
+                        continue;
                     }
-
                     System.out.println("✅ Logged In Successfully");
 
-                    // INNER LOOP: logged-in menu
+                    // logged-in loop
                     while (true) {
-                        System.out.println("\n--- Menu ---");
-                        System.out.println("1. View My Bookings");
-                        System.out.println("2. Cancel a Booking (by Ticket ID)");
-                        System.out.println("3. Logout");
-                        System.out.print("Enter Choice: ");
+                        showUserMenu();
                         String c = br.readLine();
 
                         if ("1".equals(c)) {
                             service.fetchBooking();
+
                         } else if ("2".equals(c)) {
-                            System.out.print("Enter Ticket ID to cancel: ");
-                            String id = br.readLine();
+                            String id = prompt(br, "Enter Ticket ID to cancel: ");
                             service.cancelBookingById(id);
+
                         } else if ("3".equals(c)) {
+                            handleBooking(service, br);
+
+                        } else if ("4".equals(c)) {
                             System.out.println("Logged Out, Thanks For Visiting Irctc.");
-                            break; // exit inner loop -> back to main menu
+                            break; // back to main menu
+
                         } else {
                             System.out.println("Invalid Choice");
                         }
@@ -70,7 +112,8 @@ public class App {
 
                 } else if ("3".equals(choice)) {
                     System.out.println("Bye !!");
-                    break; // exit the program
+                    break;
+
                 } else {
                     System.out.println("Invalid choice");
                 }
@@ -79,6 +122,5 @@ public class App {
             System.out.println("=== ERROR IN MAIN ===");
             t.printStackTrace();
         }
+    }
 }
-}
-
